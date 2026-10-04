@@ -1,0 +1,123 @@
+@page
+@model CarsiDekor.Web.Pages.Projects.IndexModel
+@{
+    // Açılışta seçili olacak kategori: URL'deki ?kategori=slug, yoksa en üstteki ana kategori
+    var selectedId = Model.SelectedId;
+    var selectedNode = Model.Tree.SelectMany(t => t.Flatten()).FirstOrDefault(n => n.Id == selectedId);
+
+    // Başlık, açıklama, yol işareti ve canonical: seçili kategoriye göre benzersiz
+    var crumbList = new List<Crumb> { new("Ana sayfa", "/"), new("Kategoriler", "/Projects") };
+    if (!string.IsNullOrEmpty(Model.Kategori) && selectedNode != null)
+    {
+        foreach (var a in selectedNode.Ancestors())
+            crumbList.Add(new Crumb(a.Name, "/Projects?kategori=" + a.Slug));
+        crumbList.Add(new Crumb(selectedNode.Name, "/Projects?kategori=" + selectedNode.Slug));
+        ViewData["Title"] = selectedNode.Name + " modelleri ve fiyat teklifi";
+        ViewData["Description"] = $"{selectedNode.Name} çalışmalarımız: kuyumcular için ölçüye özel üretim. Fotoğrafları inceleyin, Çarşı Dekor'dan teklif alın.";
+        ViewData["Canonical"] = "/Projects?kategori=" + selectedNode.Slug;
+        var ogPic = selectedNode.Thumb;
+        if (!string.IsNullOrEmpty(ogPic)) ViewData["OgImage"] = ogPic;
+    }
+    else
+    {
+        ViewData["Title"] = "Kuyumcu vitrin, banko, niş ve yüzüklük kategorileri";
+        ViewData["Description"] = "Çarşı Dekor'un vitrin, banko, niş, manken, yüzüklük ve diğer sergileme kategorileri. Kuyumcular için ölçüye özel üretim.";
+        ViewData["Canonical"] = "/Projects";
+    }
+    ViewData["Crumbs"] = crumbList;
+
+    // Sol menüde işaretlenecek satır (en fazla 2. seviye)
+    var navVd = new ViewDataDictionary(ViewData) { ["FirstId"] = selectedNode?.NavId ?? selectedId };
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Kategoriler</h1>
+        <p>Kuyumcular için hazırladığımız vitrin ve sergileme işleri.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        @if (Model.Tree.Any())
+        {
+            <div class="proj-layout">
+                <nav class="proj-sidebar" aria-label="Kategoriler">
+                    @foreach (var top in Model.Tree)
+                    {
+                        <partial name="_CategoryNav" model="top" view-data="navVd" />
+                    }
+                </nav>
+
+                <div class="proj-content">
+                    @* Her kategori (hangi seviyede olursa olsun) için bir panel *@
+                    @foreach (var node in Model.Tree.SelectMany(t => t.Flatten()))
+                    {
+                        <div class="proj-panel @(node.Id == selectedId ? "is-active" : "")" id="panel-@node.Id"
+                             data-cat-panel data-nav="panel-@node.NavId" data-slug="@node.Slug">
+
+                            @if (node.Depth > 0)
+                            {
+                                <div class="proj-crumbs">
+                                    @foreach (var a in node.Ancestors())
+                                    {
+                                        <button type="button" data-goto="panel-@a.Id">@a.Name</button>
+                                        <span>/</span>
+                                    }
+                                    <span class="now">@node.Name</span>
+                                </div>
+                            }
+
+                            <div class="proj-panel-head">
+                                <h2>@node.Name</h2>
+                            </div>
+
+                            @if (!node.IsLeaf)
+                            {
+                                <div class="proj-cards">
+                                    @foreach (var child in node.Children)
+                                    {
+                                        <button type="button" class="proj-card" data-goto="panel-@child.Id">
+                                            @if (!string.IsNullOrEmpty(child.Thumb))
+                                            {
+                                                <img src="@child.Thumb" alt="@child.Name, Çarşı Dekor" loading="lazy" decoding="async" />
+                                            }
+                                            else
+                                            {
+                                                <span class="proj-card-ph" aria-hidden="true">
+                                                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 8"/></svg>
+                                                </span>
+                                            }
+                                            <span class="proj-card-body">
+                                                <span class="proj-card-name">@child.Name</span>
+                                                <span class="proj-card-arrow" aria-hidden="true">→</span>
+                                            </span>
+                                            <span class="proj-card-line"></span>
+                                        </button>
+                                    }
+                                </div>
+                            }
+
+                            @if (node.IsLeaf)
+                            {
+                                <partial name="_CategoryGallery" model="node" />
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <p>Henüz kategori eklenmedi.</p>
+            </div>
+        }
+    </div>
+</section>
+
+<partial name="_CtaBand" />
+
+@section Scripts {
+    <script src="~/js/category-tabs.js"></script>
+}

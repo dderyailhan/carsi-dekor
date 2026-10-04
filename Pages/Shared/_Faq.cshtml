@@ -1,0 +1,41 @@
+@using System.Text.Json
+@{
+    var faqs = SiteContent.Faqs;
+    var faqJson = JsonSerializer.Serialize(new Dictionary<string, object>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "FAQPage",
+        ["mainEntity"] = faqs.Select(f => new Dictionary<string, object>
+        {
+            ["@type"] = "Question",
+            ["name"] = f.Question,
+            ["acceptedAnswer"] = new Dictionary<string, object>
+            {
+                ["@type"] = "Answer",
+                ["text"] = f.Answer
+            }
+        }).ToArray()
+    });
+}
+<section class="section faq-section" aria-labelledby="faq-title">
+    <div class="container">
+        <div class="section-head section-head-center">
+            <div>
+                <h2 id="faq-title">Sık sorulan sorular</h2>
+                <p>Sipariş vermeden önce en çok merak edilenler.</p>
+            </div>
+        </div>
+        <div class="faq-list">
+            @foreach (var f in faqs)
+            {
+                <details class="faq-item">
+                    <summary>@f.Question</summary>
+                    <p>@f.Answer</p>
+                </details>
+            }
+        </div>
+        <p class="faq-more">Aklınıza takılan başka bir şey mi var? <a asp-page="/Contact">Bize yazın</a> ya da
+            <a href="tel:@SiteInfo.PhoneLink">@SiteInfo.Phone</a> numarasını arayın.</p>
+    </div>
+</section>
+<script type="application/ld+json">@Html.Raw(faqJson)</script>

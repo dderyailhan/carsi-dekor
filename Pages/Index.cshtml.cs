@@ -1,0 +1,140 @@
+using CarsiDekor.Web.Data;
+using CarsiDekor.Web.Models;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
+namespace CarsiDekor.Web.Pages;
+
+public class IndexModel : PageModel
+{
+    private readonly AppDbContext _db;
+
+    public IndexModel(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    // Slider'daki bir slayt
+    public record HeroSlide(string Image, string Title, string Subtitle, string LinkUrl, string LinkText);
+
+    // Kategori kutucuğu: ad, adres, proje sayısı ve gösterilecek görsel
+    public class CategoryTile
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Slug { get; set; } = string.Empty;
+        public int ProjectCount { get; set; }
+        public string? Cover { get; set; }
+    }
+
+    // Yönetim panelinde (Admin > Slider) hiç aktif slayt yoksa gösterilen geçici örnekler.
+    private static readonly List<HeroSlide> Placeholders = new()
+    {
+        new("https://placehold.co/1920x900/2a2a31/d4d4da?text=Fotograf+1",
+            "Ürününüz vitrinde parlasın",
+            "Kuyumcular için ölçüye özel vitrin tasarımı ve marangozluk.",
+            "/Projects", "Kategorilerimizi inceleyin"),
+    };
+
+    public List<HeroSlide> Slides { get; private set; } = new();
+
+    public List<CategoryTile> Categories { get; private set; } = new();
+    public List<Project> Featured { get; private set; } = new();
+
+    public async Task OnGetAsync()
+    {
+        Slides = await _db.Slides
+            .AsNoTracking()
+            .Where(x => x.IsActive)
+            .OrderBy(x => x.DisplayOrder)
+            .ThenBy(x => x.Id)
+            .Select(x => new HeroSlide(
+                x.ImagePath,
+                x.Title ?? string.Empty,
+                x.Subtitle ?? string.Empty,
+                x.LinkUrl ?? string.Empty,
+                x.LinkText ?? string.Empty))
+            .ToListAsync();
+
+        if (Slides.Count == 0) Slides = Placeholders;
+
+        var allCategories = await _db.Categories
+            .AsNoTracking()
+            .Select(c => new { c.Id, c.ParentCategoryId, c.Name, c.Slug, c.DisplayOrder, c.CoverImagePath })
+            .ToListAsync();
+
+        var publishedProjects = await _db.Projects
+            .AsNoTracking()
+            .Where(p => p.IsPublished)
+            .Select(p => new { p.CategoryId, p.CoverImagePath, p.CreatedAt })
+            .ToListAsync();
+
+        // Kategoriye doğrudan eklenen ek fotoğraflar: ne kapak ne de proje fotoğrafı
+        // varsa anasayfa kutucuğu için son yedek kaynak olarak kullanılır.
+        var categoryImages = await _db.CategoryImages
+            .AsNoTracking()
+            .Select(i => new { i.CategoryId, i.ImagePath, i.DisplayOrder })
+            .ToListAsync();
+
+        var byParent = allCategories.Where(c => c.ParentCategoryId != null)
+            .GroupBy(c => c.ParentCategoryId!.Value)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        // Bir kategorinin kendisi + tüm alt/alt-alt kategorilerinin id'lerini toplar
+        HashSet<int> DescendantIds(int rootId)
+        {
+            var result = new HashSet<int> { rootId };
+            void Walk(int id)
+            {
+                if (!byParent.TryGetValue(id, out var kids)) return;
+                foreach (var k in kids)
+                {
+                    if (result.Add(k.Id)) Walk(k.Id);
+                }
+            }
+            Walk(rootId);
+            return result;
+        }
+
+        // Ana sayfada sadece en üst düzey kategoriler kart olarak gösterilir
+        // (Vitrinler, Bankolar, Nişler, Diğerleri gibi) — alt tipler tek tek listelenmez.
+        Categories = allCategories
+            .Where(c => c.ParentCategoryId == null)
+            .OrderBy(c => c.DisplayOrder)
+            .Select(top =>
+            {
+                var ids = DescendantIds(top.Id);
+                var projectsInBranch = publishedProjects.Where(p => ids.Contains(p.CategoryId)).ToList();
+                var imagesInBranch = categoryImages.Where(i => ids.Contains(i.CategoryId)).ToList();
+
+                return new CategoryTile
+                {
+                    Name = top.Name,
+                    Slug = top.Slug,
+                    ProjectCount = projectsInBranch.Count,
+                    // Sırasıyla: 1) bu kategori için yüklenen kapak fotoğrafı,
+                    // 2) altındaki en yeni projenin kapağı, 3) kategoriye eklenen ek fotoğraflardan biri.
+                    Cover = top.CoverImagePath
+                        ?? projectsInBranch
+                            .Where(p => !string.IsNullOrEmpty(p.CoverImagePath))
+                            .OrderByDescending(p => p.CreatedAt)
+                            .Select(p => p.CoverImagePath)
+                            .FirstOrDefault()
+                        ?? imagesInBranch
+                            .OrderBy(i => i.DisplayOrder)
+                            .Select(i => i.ImagePath)
+                            .FirstOrDefault()
+                };
+            })
+            .ToList();
+
+        // Önce "öne çıkan" işaretliler, eksik kalırsa en yeniler
+        Featured = await _db.Projects
+            .AsNoTracking()
+            .Include(p => p.Category)
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.IsFeatured)
+            .ThenByDescending(p => p.CreatedAt)
+            .Take(3)
+            .ToListAsync();
+    }
+}

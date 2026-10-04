@@ -1,0 +1,30 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Bir sorun oluştu";
+    ViewData["Description"] = "Sayfa yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.";
+    ViewData["NoIndex"] = true;
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Bir sorun oluştu</h1>
+        <p>İsteğiniz tamamlanamadı. Lütfen biraz sonra tekrar deneyin.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <div class="thanks-box">
+            <p>Sorun devam ederse bizi arayabilirsiniz: <a href="tel:@SiteInfo.PhoneLink">@SiteInfo.Phone</a></p>
+            <div class="detail-actions">
+                <a class="btn-ruby" asp-page="/Index">Ana sayfaya dön</a>
+                <a class="btn-ink" asp-page="/Contact">İletişim</a>
+            </div>
+            @if (Model.ShowRequestId)
+            {
+                <p class="form-note mt-4">Destek için hata kodu: <code>@Model.RequestId</code></p>
+            }
+        </div>
+    </div>
+</section>

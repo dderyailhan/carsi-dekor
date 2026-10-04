@@ -1,0 +1,35 @@
+@page "/tesekkurler"
+@model CarsiDekor.Web.Pages.ThankYouModel
+@{
+    ViewData["Title"] = "Teşekkürler";
+    ViewData["Description"] = "Mesajınız Çarşı Dekor'a ulaştı. En kısa sürede size dönüş yapacağız.";
+    ViewData["NoIndex"] = true;
+    var waText = Uri.EscapeDataString("Merhaba, iletişim formundan mesaj bıraktım.");
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Teşekkürler, mesajınız bize ulaştı</h1>
+        <p>En kısa sürede telefon numaranızdan size dönüş yapacağız.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <div class="thanks-box">
+            <p>Acil bir durum varsa beklemeden arayabilir ya da WhatsApp'tan yazabilirsiniz. Çalışma saatlerimiz: @SiteInfo.WorkingHours.</p>
+            <div class="detail-actions">
+                <a class="btn-ruby" href="tel:@SiteInfo.PhoneLink">@SiteInfo.Phone</a>
+                <a class="btn-ink" href="https://wa.me/@(SiteInfo.WhatsApp)?text=@waText" target="_blank" rel="noopener">WhatsApp'tan yazın</a>
+            </div>
+            <h2 class="side-title mt-5">Bu arada işlerimize göz atın</h2>
+            <ul class="link-chips">
+                <li><a asp-page="/Projects/Index" asp-route-kategori="vitrinler">Vitrinler</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="bankolar">Bankolar</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="nisler">Nişler</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="yuzukluk">Yüzüklük</a></li>
+                <li><a asp-page="/Index">Ana sayfaya dön</a></li>
+            </ul>
+        </div>
+    </div>
+</section>

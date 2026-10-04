@@ -1,0 +1,156 @@
+@page
+@model CarsiDekor.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Kuyumcular için vitrin tasarımı ve üretimi";
+    ViewData["Description"] = "Kuyumcular için ölçüye özel vitrin, banko, niş, yüzüklük ve manken üretimi. Avcılar, İstanbul. Ücretsiz görüşme ve teklif için hemen arayın.";
+    var waText = Uri.EscapeDataString("Merhaba, vitrin işleriniz hakkında bilgi almak istiyorum.");
+}
+
+<section class="hero" aria-label="Öne çıkan işler">
+    <h1 class="visually-hidden">Çarşı Dekor: kuyumcular için vitrin tasarımı ve üretimi</h1>
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5500"
+         data-bs-pause="false">
+        <div class="carousel-indicators @(Model.Slides.Count < 2 ? "d-none" : "")">
+            @for (var i = 0; i < Model.Slides.Count; i++)
+            {
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"
+                        aria-label="Slayt @(i + 1)"></button>
+            }
+        </div>
+
+        <div class="carousel-inner">
+            @for (var i = 0; i < Model.Slides.Count; i++)
+            {
+                var s = Model.Slides[i];
+                <div class="carousel-item @(i == 0 ? "active" : "")">
+                    <img src="@s.Image"
+                         alt="@(string.IsNullOrWhiteSpace(s.Title) ? "Çarşı Dekor vitrin çalışması" : s.Title)" @(i == 0 ?
+                         "fetchpriority=high" : "loading=lazy") decoding="async" />
+            <div class="hero-shade"></div>
+            @if (!string.IsNullOrWhiteSpace(s.Title) || !string.IsNullOrWhiteSpace(s.Subtitle) ||
+        !string.IsNullOrWhiteSpace(s.LinkText))
+            {
+                <div class="hero-caption">
+                    <div class="container">
+                        @if (!string.IsNullOrWhiteSpace(s.Title))
+                        {
+                            <h2>@s.Title</h2>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(s.Subtitle))
+                        {
+                            <p>@s.Subtitle</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(s.LinkText) && !string.IsNullOrWhiteSpace(s.LinkUrl))
+                        {
+                            <a class="btn-ruby" href="@s.LinkUrl">@s.LinkText</a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<button class="carousel-control-prev @(Model.Slides.Count < 2 ? "d-none" : "")" type="button"
+        data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Önceki</span>
+</button>
+<button class="carousel-control-next @(Model.Slides.Count < 2 ? "d-none" : "")" type="button"
+        data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Sonraki</span>
+</button>
+</div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-head section-head-center">
+            <div>
+                <h2>Vitrininizin Her Köşesi İçin</h2>
+                <p>Yüzükten kolyeye, küçük stanttan komple mağaza vitrinine kadar ihtiyacınıza uygun kategoriyi seçin.
+                </p>
+            </div>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 cat-tile-row justify-content-center">
+            @foreach (var c in Model.Categories)
+            {
+                <div class="col">
+                    <a class="cat-tile" asp-page="/Projects/Index" asp-route-kategori="@c.Slug">
+                        @if (!string.IsNullOrEmpty(c.Cover))
+                        {
+                            <img src="@c.Cover" alt="@c.Name modelleri, Çarşı Dekor" loading="lazy" decoding="async" />
+                        }
+                        <div class="cat-tile-body">
+                            <h3>@c.Name</h3>
+                            <span>@c.ProjectCount proje</span>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section section-dark">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <h2>Öne çıkan işler</h2>
+                <p>Atölyemizden çıkan son çalışmalardan bir seçki.</p>
+            </div>
+            <a class="text-link" asp-page="/Projects/Index">Tüm kategorileri gör</a>
+        </div>
+
+        @if (Model.Featured.Any())
+        {
+            <div class="featured-grid">
+                @foreach (var p in Model.Featured)
+                {
+                    <partial name="_ProjectCard" model="p" />
+                }
+            </div>
+        }
+        else
+        {
+            <p>Henüz proje eklenmedi.</p>
+        }
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-head">
+            <div>
+                <h2>Nasıl çalışıyoruz</h2>
+                <p>İhtiyacınızdan teslimata üç adımda ilerliyoruz.</p>
+            </div>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <span class="step-no">1</span>
+                <h3>Ölçü ve ihtiyaç</h3>
+                <p>Vitrininizin ölçüsünü, sergileyeceğiniz ürünleri ve bütçenizi birlikte konuşuruz.</p>
+            </div>
+            <div class="step">
+                <span class="step-no">2</span>
+                <h3>Tasarım</h3>
+                <p>Malzeme, renk ve aydınlatma seçenekleriyle size özel bir vitrin tasarımı hazırlarız.</p>
+            </div>
+            <div class="step">
+                <span class="step-no">3</span>
+                <h3>Üretim ve teslim</h3>
+                <p>Atölyemizde marangozluk işçiliğiyle üretir, hazır hale getirip teslim ederiz.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<partial name="_Testimonials" />
+
+<partial name="_Faq" />
+
+<partial name="_CtaBand" />

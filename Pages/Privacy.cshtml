@@ -1,0 +1,51 @@
+@page "/gizlilik-politikasi"
+@model PrivacyModel
+@{
+    ViewData["Title"] = "Gizlilik politikası ve KVKK aydınlatma metni";
+    ViewData["Description"] = "Çarşı Dekor web sitesinde kişisel verilerinizin nasıl toplandığı, kullanıldığı ve korunduğu hakkında bilgi.";
+    ViewData["Crumbs"] = new List<Crumb> { new("Ana sayfa", "/"), new("Gizlilik politikası", "/gizlilik-politikasi") };
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Gizlilik politikası</h1>
+        <p>Kişisel verilerinizi nasıl işlediğimizi burada anlatıyoruz.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <div class="prose legal">
+            <p>Bu metin, 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) kapsamında <strong>@SiteInfo.Name</strong> web sitesini kullanan ziyaretçileri bilgilendirmek için hazırlanmıştır.</p>
+
+            <h2>Veri sorumlusu</h2>
+            <p>
+                @SiteInfo.Name<br />
+                @SiteInfo.Address<br />
+                Telefon: <a href="tel:@SiteInfo.PhoneLink">@SiteInfo.Phone</a><br />
+                E-posta: <a href="mailto:@SiteInfo.Email">@SiteInfo.Email</a>
+            </p>
+
+            <h2>Hangi verileri topluyoruz?</h2>
+            <p>İletişim formunu doldurduğunuzda ad soyad, telefon numarası, isteğe bağlı e-posta adresi ve mesajınızda yazdığınız bilgileri alırız. Telefon ve WhatsApp ile bize ulaştığınızda da iletişim bilgileriniz tarafımıza ulaşır. Siteyi çalıştırmak için sunucu kayıtları (IP adresi, tarayıcı türü, ziyaret zamanı gibi teknik bilgiler) tutulabilir.</p>
+
+            <h2>Verileri neden kullanıyoruz?</h2>
+            <p>Verilerinizi yalnızca talebinize dönüş yapmak, teklif hazırlamak, siparişinizi yürütmek ve yasal yükümlülüklerimizi yerine getirmek için kullanırız. Verileriniz satılmaz, pazarlama amacıyla üçüncü kişilerle paylaşılmaz.</p>
+
+            <h2>Hukuki sebep</h2>
+            <p>Verileriniz; talebinizin yerine getirilmesi, sözleşmenin kurulması ve ifası, hukuki yükümlülüklerimiz ile meşru menfaatlerimiz kapsamında işlenir. Açık rızanızın gerektiği durumlarda ayrıca rızanız alınır.</p>
+
+            <h2>Verileri ne kadar saklıyoruz?</h2>
+            <p>İletişim formu mesajları, talebinizin sonuçlanması ve yasal saklama süreleri boyunca tutulur; süre dolunca silinir veya anonim hale getirilir.</p>
+
+            <h2>Çerezler ve üçüncü taraf hizmetler</h2>
+            <p>Sitemizde yönetim paneli girişi için oturum çerezi kullanılır; ziyaretçiler için takip veya reklam çerezi kullanmıyoruz. Sayfalarımızda Google Fonts ve Google Haritalar gibi üçüncü taraf hizmetler yüklenebilir; bu hizmetler kendi gizlilik politikalarına tabidir. İleride ziyaretçi istatistiği (ör. Google Analytics) eklenirse bu metin güncellenir.</p>
+
+            <h2>Haklarınız</h2>
+            <p>KVKK'nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme, düzeltilmesini veya silinmesini isteme ve itiraz etme haklarına sahipsiniz. Taleplerinizi <a href="mailto:@SiteInfo.Email">@SiteInfo.Email</a> adresine veya yukarıdaki adrese iletebilirsiniz.</p>
+
+            <h2>Güncellemeler</h2>
+            <p>Bu metin gerektiğinde güncellenir. Güncel hali her zaman bu sayfada yayınlanır.</p>
+        </div>
+    </div>
+</section>

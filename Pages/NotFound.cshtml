@@ -1,0 +1,34 @@
+@page "/404"
+@model CarsiDekor.Web.Pages.NotFoundModel
+@{
+    ViewData["Title"] = "Sayfa bulunamadı";
+    ViewData["Description"] = "Aradığınız sayfa bulunamadı. Kategorilerimize göz atabilir veya bizimle iletişime geçebilirsiniz.";
+    ViewData["NoIndex"] = true;
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Aradığınız sayfa bulunamadı</h1>
+        <p>Adres değişmiş ya da kaldırılmış olabilir. Aşağıdaki bağlantılardan devam edebilirsiniz.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <div class="thanks-box">
+            <div class="detail-actions">
+                <a class="btn-ruby" asp-page="/Index">Ana sayfaya dön</a>
+                <a class="btn-ink" asp-page="/Projects/Index">Kategorilere göz at</a>
+                <a class="btn-ink" asp-page="/Contact">Bize ulaşın</a>
+            </div>
+            <h2 class="side-title mt-5">Sık bakılan kategoriler</h2>
+            <ul class="link-chips">
+                <li><a asp-page="/Projects/Index" asp-route-kategori="vitrinler">Vitrinler</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="bankolar">Bankolar</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="nisler">Nişler</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="mankenler">Mankenler</a></li>
+                <li><a asp-page="/Projects/Index" asp-route-kategori="yuzukluk">Yüzüklük</a></li>
+            </ul>
+        </div>
+    </div>
+</section>

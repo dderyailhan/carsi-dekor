@@ -1,0 +1,55 @@
+@page "/vaka-calismalari"
+@model CarsiDekor.Web.Pages.CaseStudiesModel
+@{
+    ViewData["Title"] = "Vaka çalışmaları: kuyumcu vitrin projelerimiz";
+    ViewData["Description"] = "Çarşı Dekor'un kuyumculara yaptığı vitrin, banko ve niş projeleri: sorun, çözüm ve sonuç.";
+    ViewData["Crumbs"] = new List<Crumb> { new("Ana sayfa", "/"), new("Vaka çalışmaları", "/vaka-calismalari") };
+    var items = SiteContent.CaseStudies.Where(c => c.Published).ToList();
+}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Vaka çalışmaları</h1>
+        <p>Gerçek projelerimizde sorunu nasıl çözdüğümüzü anlatıyoruz.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        @if (items.Count == 0)
+        {
+            <div class="thanks-box">
+                <p>Vaka çalışmalarımızı hazırlıyoruz. O zamana kadar tamamlanan işlerimizi kategorilerden inceleyebilirsiniz.</p>
+                <a class="btn-ruby" asp-page="/Projects/Index">Kategorilere göz at</a>
+            </div>
+        }
+        else
+        {
+            foreach (var c in items)
+            {
+                <article class="case" id="@c.Slug">
+                    <div class="row g-5 align-items-start">
+                        @if (!string.IsNullOrEmpty(c.Image))
+                        {
+                            <div class="col-lg-5">
+                                <img class="case-img" src="@c.Image" alt="@c.Title, @c.Place" loading="lazy" decoding="async" />
+                            </div>
+                        }
+                        <div class="@(string.IsNullOrEmpty(c.Image) ? "col-lg-9" : "col-lg-7")">
+                            <h2>@c.Title</h2>
+                            <p class="case-place">@c.Place</p>
+                            <dl class="case-list">
+                                <div><dt>Sorun</dt><dd>@c.Problem</dd></div>
+                                <div><dt>Çözüm</dt><dd>@c.Solution</dd></div>
+                                <div><dt>Sonuç</dt><dd>@c.Result</dd></div>
+                            </dl>
+                            <a class="text-link" asp-page="/Projects/Index" asp-route-kategori="@c.CategorySlug">Benzer işleri inceleyin</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </div>
+</section>
+
+<partial name="_CtaBand" />

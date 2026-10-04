@@ -1,0 +1,16 @@
+@{
+    var waText = Uri.EscapeDataString("Merhaba, vitrin işleriniz hakkında bilgi almak istiyorum.");
+}
+<section class="cta-band">
+    <div class="container">
+        <div>
+            <h2>Vitrininizi yenilemek mi istiyorsunuz?</h2>
+            <p>Ölçünüzü ve ne istediğinizi yazın, size dönüş yapalım.</p>
+        </div>
+        <div class="cta-actions">
+            <a class="btn-white" href="https://wa.me/@(SiteInfo.WhatsApp)?text=@waText" target="_blank" rel="noopener">WhatsApp ile yazın</a>
+            <a class="btn-line" href="tel:@SiteInfo.PhoneLink">@SiteInfo.Phone</a>
+            <a class="btn-line" asp-page="/Contact">İletişim formu</a>
+        </div>
+    </div>
+</section>
